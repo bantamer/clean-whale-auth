@@ -20,8 +20,8 @@ const Welcome = () => {
   const handleLogout = async () => {
     await makeRequest("/auth/logout", {
       method: HttpMethods.DELETE,
-      credentials: "include",
     });
+
     logout();
     navigate(AppRoutes.Login);
   };

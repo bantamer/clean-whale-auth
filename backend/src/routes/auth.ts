@@ -91,6 +91,7 @@ const loginHandler: RequestHandler = async (
   res: Response
 ) => {
   const { email, password } = req.body;
+  const sessionId = req.cookies?.session_id;
 
   // Email validation
   const emailError = validateEmail(email);
@@ -131,6 +132,13 @@ const loginHandler: RequestHandler = async (
       expiresIn: "30m",
     });
 
+    const userId = user.id;
+
+    await db.query("UPDATE sessions SET user_id = ? WHERE session_id = ?", [
+      userId,
+      sessionId,
+    ]);
+
     res.json({ token });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -150,14 +158,12 @@ const logoutHandler: RequestHandler = async (
   }
 
   try {
-    await db.query("DELETE FROM sessions WHERE session_id = ?", [sessionId]);
-
-    res.clearCookie("session_id");
-    res.clearCookie("csrf_token");
+    await db.query("UPDATE sessions SET user_id = NULL WHERE session_id = ?", [
+      sessionId,
+    ]);
 
     res.status(200).json({ message: "Successfully logged out" });
   } catch (err) {
-    console.error("Logout error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

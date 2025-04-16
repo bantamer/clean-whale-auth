@@ -29,7 +29,6 @@ export interface RequestOptions<TBody = any> {
   pathnameData?: Record<string, string>;
   headers?: Record<string, string>;
   body?: TBody;
-  credentials?: RequestInit["credentials"];
 }
 
 const replacePathParams = (path: string, data?: Record<string, string>) => {
@@ -44,7 +43,7 @@ export const makeRequest = async <TResponseBody = any, TBody = any | undefined>(
   pathname: string,
   options: Omit<RequestOptions<TBody>, "pathname">
 ): Promise<TResponseBody> => {
-  const { pathnameData, body, headers, credentials, ...rest } = options;
+  const { pathnameData, body, headers, ...rest } = options;
 
   const requestOptions: RequestInit = {
     credentials: "include",
